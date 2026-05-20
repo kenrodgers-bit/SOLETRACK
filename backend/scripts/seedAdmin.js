@@ -6,7 +6,7 @@ import User from '../models/User.js';
 dotenv.config();
 
 const run = async () => {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.MONGO_DB_NAME || 'soletrack' });
   const email = (process.env.ADMIN_EMAIL || 'admin@example.com').toLowerCase();
   const existing = await User.findOne({ email });
   if (existing) {

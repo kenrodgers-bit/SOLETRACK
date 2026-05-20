@@ -26,6 +26,7 @@ if (process.env.DNS_SERVERS) {
 const app = express();
 const PORT = process.env.PORT || 5000;
 const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
+const mongoDbName = process.env.MONGO_DB_NAME || 'soletrack';
 
 app.use(cors({ origin: (origin, cb) => (!origin || origin === allowedOrigin || allowedOrigin === '*') ? cb(null, true) : cb(new Error('Not allowed by CORS')) }));
 app.use(express.json({ limit: '2mb' }));
@@ -42,7 +43,7 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ message: err.message || 'Server error' });
 });
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, { dbName: mongoDbName })
   .then(() => app.listen(PORT, '0.0.0.0', () => console.log(`SoleTrack API running on port ${PORT}`)))
   .catch(err => {
     console.error('MongoDB connection failed:', err.message);

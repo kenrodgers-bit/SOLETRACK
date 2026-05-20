@@ -20,6 +20,8 @@ services:
         value: 5000
       - key: MONGO_URI
         sync: false
+      - key: MONGO_DB_NAME
+        value: soletrack
       - key: JWT_SECRET
         generateValue: true
       - key: CLOUDINARY_CLOUD_NAME
