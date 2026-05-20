@@ -1,27 +1,26 @@
-# SoleTrack — Shoe Shop Inventory PWA
+# SoleTrack - Shoe Shop Inventory PWA
 
-SoleTrack is a full-stack, mobile-first Progressive Web App for shoe shops. It manages inventory by shoe size, records sales, deducts stock, alerts staff when stock is low, and installs on Android like a standalone app.
+SoleTrack is a full-stack, mobile-first Progressive Web App for shoe shop inventory and sales management. It supports admin/staff authentication, stock by shoe size, low-stock alerts, sales recording, Cloudinary image uploads, and Android-style PWA install.
+
+## Production URLs
+
+- Frontend PWA: https://soletrack-snowy.vercel.app
+- Live API: https://soletrack-api.vercel.app/api/health
+- GitHub repo: https://github.com/kenrodgers-bit/SOLETRACK
+
+The frontend production environment uses:
+
+```env
+VITE_API_BASE_URL=https://soletrack-api.vercel.app
+```
 
 ## Project Structure
 
 ```txt
-soletrack-shoe-inventory/
-├── backend
-└── frontend
+backend/
+frontend/
+render.yaml
 ```
-
-## Features
-
-- Admin email/password login
-- Staff 6-digit PIN login
-- JWT protected API
-- Admin-only staff manager
-- Shoe inventory with sizes and quantities
-- Cloudinary image upload
-- Sales recording with automatic stock deduction
-- Low-stock alerts
-- Mobile-first PWA UI with bottom navigation
-- Installable Android-style standalone app
 
 ## Backend Setup
 
@@ -29,33 +28,33 @@ soletrack-shoe-inventory/
 cd backend
 npm install
 cp .env.example .env
+npm run dev
 ```
 
-Edit `.env`:
+Required backend environment:
 
 ```env
 PORT=5000
-MONGO_URI=mongodb+srv://your-mongodb-uri
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/?appName=soletrack
+MONGO_DB_NAME=soletrack
 JWT_SECRET=replace_with_a_long_random_secret
 FRONTEND_URL=http://localhost:5173
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
-ADMIN_NAME=Admin
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=admin123
 ```
 
-Create the first admin:
+`DNS_SERVERS=8.8.8.8,1.1.1.1` is optional and useful on local Windows networks where Node cannot resolve MongoDB Atlas SRV records.
+
+Seed or reset the production admin:
 
 ```bash
+ADMIN_NAME="SoleTrack Admin" \
+ADMIN_EMAIL="admin@soletrack.app" \
+ADMIN_PASSWORD="use-a-strong-password" \
+ADMIN_RESET=true \
+NODE_ENV=production \
 npm run seed:admin
-```
-
-Run backend:
-
-```bash
-npm run dev
 ```
 
 ## Frontend Setup
@@ -64,54 +63,61 @@ npm run dev
 cd frontend
 npm install
 cp .env.example .env
+npm run dev -- --host 0.0.0.0
 ```
 
-Edit `.env`:
+Required frontend environment:
 
 ```env
 VITE_API_BASE_URL=http://localhost:5000
 ```
 
-Run frontend:
+Build and preview:
 
 ```bash
-npm run dev -- --host 0.0.0.0
+npm run build
+npm run preview
 ```
-
-Open:
-
-```txt
-http://localhost:5173
-```
-
-## Android Native-Like Install
-
-1. Deploy the frontend or open it from your local network on the phone.
-2. Open the app in Chrome on Android.
-3. Tap the menu ⋮.
-4. Tap **Add to Home screen** or **Install app**.
-5. Launch it from the home screen. It will open fullscreen without browser clutter.
 
 ## Deployment
-
-### Backend on Render
-
-- Root directory: `backend`
-- Build command: `npm install`
-- Start command: `npm start`
-- Add backend environment variables from `.env.example`
-- Set `FRONTEND_URL` to your Vercel frontend URL
 
 ### Frontend on Vercel
 
 - Root directory: `frontend`
 - Build command: `npm run build`
 - Output directory: `dist`
-- Add `VITE_API_BASE_URL=https://your-render-backend.onrender.com`
+- Production env: `VITE_API_BASE_URL=https://soletrack-api.vercel.app`
 
-## Notes
+### Backend
 
-- Staff PINs are never displayed.
-- Passwords and PINs are hashed with bcryptjs.
-- Cloudinary image upload is optional for creating a shoe, but enabled for admin uploads.
-- The app needs internet for backend/API operations, but the PWA shell can load from cache.
+The backend can run as:
+
+- A Node web service on Render using `render.yaml`
+- A Vercel serverless API using `backend/api/index.js`
+
+Render settings:
+
+- Root: repo root when using Blueprint, or `backend` when creating a service manually
+- Build command: `cd backend && npm ci`
+- Start command: `cd backend && npm start`
+- Health check: `/api/health`
+
+Required production backend env vars:
+
+```env
+NODE_ENV=production
+PORT=5000
+MONGO_URI=<MongoDB Atlas connection string>
+MONGO_DB_NAME=soletrack
+JWT_SECRET=<strong random secret>
+FRONTEND_URL=https://soletrack-snowy.vercel.app
+CLOUDINARY_CLOUD_NAME=<Cloudinary cloud name>
+CLOUDINARY_API_KEY=<Cloudinary API key>
+CLOUDINARY_API_SECRET=<Cloudinary API secret>
+```
+
+Cloudinary credentials are required for file uploads. Admins can still save an externally hosted image URL directly when Cloudinary is not configured.
+
+## PWA Install
+
+Open the frontend URL in Chrome on Android, then use **Install app** or **Add to Home screen**. SoleTrack launches in standalone mode with the generated service worker and manifest.
