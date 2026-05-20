@@ -17,7 +17,8 @@ export default function Login() {
     e.preventDefault();
     setError(''); setLoading(true);
     try {
-      await login(isAdmin ? { email: identifier, password } : { pin: identifier });
+      const cleanIdentifier = identifier.trim();
+      await login(isAdmin ? { email: cleanIdentifier, password: password.trim() } : { pin: cleanIdentifier });
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed.');

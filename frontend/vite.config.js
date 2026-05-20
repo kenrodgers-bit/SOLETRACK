@@ -24,12 +24,15 @@ export default defineConfig({
         ]
       },
       workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
-            urlPattern: ({ request }) => request.destination === 'image' || request.destination === 'style' || request.destination === 'script',
+            urlPattern: ({ request }) => request.destination === 'image',
             handler: 'CacheFirst',
-            options: { cacheName: 'soletrack-assets', expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 30 } }
+            options: { cacheName: 'soletrack-images', expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 30 } }
           },
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/api/'),

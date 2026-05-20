@@ -13,7 +13,9 @@ const makeToken = (user) => jwt.sign(
 
 router.post('/login', async (req, res) => {
   try {
-    const { email, password, pin } = req.body;
+    const email = req.body.email?.trim();
+    const password = req.body.password?.trim();
+    const pin = req.body.pin?.trim();
 
     if (pin) {
       if (!/^\d{6}$/.test(pin)) return res.status(400).json({ message: 'PIN must be 6 digits.' });

@@ -8,7 +8,12 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem('soletrack_token'));
 
   const login = async (payload) => {
-    const { data } = await api.post('/auth/login', payload);
+    const cleanPayload = {
+      ...payload,
+      email: payload.email?.trim(),
+      pin: payload.pin?.trim()
+    };
+    const { data } = await api.post('/auth/login', cleanPayload);
     localStorage.setItem('soletrack_token', data.token);
     localStorage.setItem('soletrack_user', JSON.stringify(data.user));
     setToken(data.token);
